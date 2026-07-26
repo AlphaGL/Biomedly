@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv(
     "dev-only-insecure-key-change-me-in-production",
 )
 
-DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
+DEBUG = False
 
 # "*" (default) keeps local dev frictionless. For a real deployment, set
 # DJANGO_ALLOWED_HOSTS to a comma-separated list (e.g. "myapp.vercel.app") —
