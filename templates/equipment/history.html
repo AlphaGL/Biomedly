@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Team History — Biomedly{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Team knowledge base</h1>
+  <p>Every analysis your whole team has run — searchable. When a colleague fixes something, it's findable here.</p>
+</section>
+
+<div class="panel">
+  <form class="inline-form">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search equipment, symptoms, past fixes…">
+    <button type="submit" class="btn-secondary">Search</button>
+  </form>
+</div>
+
+{% if analyses %}
+  <div class="history-list">
+    {% for a in analyses %}
+      <details class="panel history-item">
+        <summary>
+          <span class="badge">{{ a.get_mode_display }}</span>
+          <strong>{{ a.equipment_name|default:a.question|truncatechars:70|default:"(photo only)" }}</strong>
+          <span class="badge"><svg class="icon icon-sm"><use href="#icon-user"></use></svg> {{ a.user.username|default:"—" }}</span>
+          <time>{{ a.created_at|date:"M j, Y H:i" }}</time>
+        </summary>
+        <div class="history-body">
+          {% if a.question %}<p class="muted">Q: {{ a.question }}</p>{% endif %}
+          <div class="answer md-source">{{ a.response_md }}</div>
+        </div>
+      </details>
+    {% endfor %}
+  </div>
+{% elif query %}
+  <p class="muted">No matches for "{{ query }}" yet.</p>
+{% else %}
+  <p class="muted">No analyses yet. Go to the <a href="{% url 'equipment:home' %}">Workbench</a> and try one.</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/app.js' %}"></script>
+<script>
+  // Render stored markdown in history entries
+  document.querySelectorAll(".md-source").forEach(el => {
+    el.innerHTML = renderMarkdown(el.textContent);
+  });
+</script>
+{% endblock %}

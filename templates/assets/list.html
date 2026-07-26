@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Asset Register — Biomedly{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Asset register</h1>
+  <p>Every machine your team tracks — serial numbers, locations, PM dates, QR codes, and full service history.</p>
+</section>
+
+<div class="panel">
+  <div class="panel-head">
+    <form class="inline-form" style="flex:1;">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search name, model, serial, location…">
+      <button type="submit" class="btn-secondary">Search</button>
+    </form>
+    <a href="{% url 'assets:create' %}" class="btn-primary" style="white-space:nowrap;">+ Add asset</a>
+  </div>
+
+  {% if assets %}
+    <div class="card-grid">
+      {% for a in assets %}
+        <a class="card card-link" href="{% url 'assets:detail' a.pk %}">
+          {% if a.photo %}<img src="{{ a.photo.url }}" alt="" loading="lazy">{% endif %}
+          <strong>{{ a.name }}</strong>
+          <p class="muted">{{ a.full_name }}{% if a.location %} · {{ a.location }}{% endif %}</p>
+          {% if a.next_pm_date %}<span class="badge">PM due {{ a.next_pm_date }}</span>{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No assets yet. <a href="{% url 'assets:create' %}">Add your first one</a> — print its QR code and stick it on the machine.</p>
+  {% endif %}
+</div>
+{% endblock %}

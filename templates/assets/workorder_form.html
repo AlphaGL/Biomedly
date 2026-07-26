@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Log work order — {{ asset.name }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Log a work order</h1>
+  <p>For <strong>{{ asset.name }}</strong></p>
+</section>
+
+<div class="panel">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label class="field"><span>Title</span>
+      <input type="text" name="title" placeholder="e.g. NIBP occlusion alarm" required></label>
+    <label class="field"><span>Problem description</span>
+      <textarea name="problem_description" rows="4"></textarea></label>
+    <label class="field"><span>Photo (optional)</span>
+      <input type="file" name="photo" accept="image/*"></label>
+
+    {% if recent_analyses %}
+      <label class="field">
+        <span>Link an Assistant conversation (optional — keeps the AI troubleshooting steps on record)</span>
+        <select name="linked_analysis_id">
+          <option value="">— none —</option>
+          {% for a in recent_analyses %}
+            <option value="{{ a.id }}">{{ a.created_at|date:"M j H:i" }} — {{ a.get_mode_display }} — {{ a.equipment_name|default:a.question|truncatechars:50 }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    {% endif %}
+
+    <button type="submit" class="btn-primary">Log work order</button>
+  </form>
+</div>
+{% endblock %}

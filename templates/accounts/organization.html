@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ org.name }} — Team settings{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>{{ org.name }}</h1>
+  <p>{% if is_solo %}Your personal workspace.{% else %}Manage your team's members and invite code.{% endif %}</p>
+</section>
+
+<div class="panel">
+  {% if messages %}
+    {% for m in messages %}<div class="status {{ m.tags }}">{{ m }}</div>{% endfor %}
+  {% endif %}
+
+  {% if is_solo %}
+    <div class="status notice">You're working solo. Share the invite code below with a colleague and this
+      automatically becomes a shared team workspace — assets, work orders, and history all become visible
+      to everyone who joins.</div>
+  {% endif %}
+
+  <h3>Invite code</h3>
+  <p>Share this code with a colleague — they enter it at signup to join <strong>{{ org.name }}</strong> automatically.</p>
+  <p class="invite-code">{{ org.invite_code }}</p>
+  {% if is_admin %}
+    <form method="post" action="{% url 'accounts:regenerate_invite_code' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-secondary"><svg class="icon"><use href="#icon-refresh"></use></svg> Regenerate code</button>
+    </form>
+  {% endif %}
+
+  <h3 style="margin-top:1.5rem;">Members ({{ members|length }})</h3>
+  <div class="doc-list">
+    {% for m in members %}
+      <div class="doc-row" style="flex-wrap:wrap;">
+        <span class="doc-icon"><svg class="icon"><use href="#icon-user"></use></svg></span>
+        <span class="doc-title">{{ m.user.username }}</span>
+        <span class="badge">{{ m.get_role_display }}</span>
+        {% if is_admin %}
+          <form method="post" action="{% url 'accounts:set_member_role' m.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="role" value="{% if m.role == 'admin' %}technician{% else %}admin{% endif %}">
+            <button type="submit" class="chip">
+              {% if m.role == "admin" %}Make technician{% else %}Make admin{% endif %}
+            </button>
+          </form>
+          {% if m.user_id != request.user.id %}
+            <form method="post" action="{% url 'accounts:remove_member' m.id %}" style="display:inline;"
+                  onsubmit="return confirm('Remove {{ m.user.username }} from the team?');">
+              {% csrf_token %}
+              <button type="submit" class="chip danger">Remove</button>
+            </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

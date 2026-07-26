@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{% if asset %}Edit asset{% else %}Add asset{% endif %} — Biomedly{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>{% if asset %}Edit {{ asset.name }}{% else %}Add an asset{% endif %}</h1>
+</section>
+
+<div class="panel">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label class="field"><span>Name</span>
+      <input type="text" name="name" value="{{ asset.name|default:'' }}" placeholder="e.g. OR-3 Patient Monitor" required></label>
+    <label class="field"><span>Manufacturer</span>
+      <input type="text" name="manufacturer" value="{{ asset.manufacturer|default:'' }}"></label>
+    <label class="field"><span>Model number</span>
+      <input type="text" name="model_number" value="{{ asset.model_number|default:'' }}"></label>
+    <label class="field"><span>Serial number</span>
+      <input type="text" name="serial_number" value="{{ asset.serial_number|default:'' }}"></label>
+    <label class="field"><span>Location</span>
+      <input type="text" name="location" value="{{ asset.location|default:'' }}" placeholder="e.g. OR-3, 2nd floor"></label>
+    <label class="field"><span>Next PM due</span>
+      <input type="date" name="next_pm_date" value="{{ asset.next_pm_date|date:'Y-m-d'|default:'' }}"></label>
+    <label class="field"><span>Notes</span>
+      <textarea name="notes" rows="3">{{ asset.notes|default:'' }}</textarea></label>
+    <label class="field"><span>Photo</span>
+      <input type="file" name="photo" accept="image/*"></label>
+    <button type="submit" class="btn-primary">{% if asset %}Save changes{% else %}Add asset{% endif %}</button>
+  </form>
+</div>
+{% endblock %}

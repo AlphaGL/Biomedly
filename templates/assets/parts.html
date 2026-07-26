@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Parts cross-reference — Biomedly{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Parts cross-reference</h1>
+  <p>Look up a part number to find where to buy it. Save the ones your team uses often — future searches for the same part will be instant.</p>
+</section>
+
+<div class="panel">
+  <form class="inline-form">
+    <input type="text" name="q" value="{{ query }}" placeholder="Part number, e.g. LM317T, PC817, 470uF 25V">
+    <button type="submit" class="btn-secondary">Search</button>
+  </form>
+
+  {% if query and web_links %}
+    <h3><svg class="icon"><use href="#icon-search"></use></svg> Search suppliers for "{{ query }}"</h3>
+    <div class="doc-list">
+      {% for l in web_links %}
+        <a class="doc-row" href="{{ l.url }}" target="_blank" rel="noopener">
+          <span class="doc-icon"><svg class="icon"><use href="#icon-external-link"></use></svg></span><span class="doc-title">{{ l.name }}</span>
+        </a>
+      {% endfor %}
+    </div>
+    <form method="post" action="{% url 'assets:part_create' %}" class="inline-form" style="margin-top:0.8rem;">
+      {% csrf_token %}
+      <input type="hidden" name="part_number" value="{{ query }}">
+      <input type="text" name="description" placeholder="What is this part / used in? (optional)" style="flex:2;">
+      <button type="submit" class="btn-secondary"><svg class="icon"><use href="#icon-plus"></use></svg> Save to team parts list</button>
+    </form>
+  {% endif %}
+
+  <h3><svg class="icon"><use href="#icon-box"></use></svg> Your team's saved parts ({{ results|length }})</h3>
+  {% if results %}
+    {% for r in results %}
+      <div class="card">
+        <strong>{{ r.part.part_number }}</strong>
+        {% if r.part.category %}<span class="badge">{{ r.part.category }}</span>{% endif %}
+        <p>{{ r.part.description }}</p>
+        <p>
+          {% for l in r.links %}<a class="chip" href="{{ l.url }}" target="_blank" rel="noopener">{{ l.name }}</a>{% endfor %}
+        </p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No saved parts yet — search above and save the ones you use.</p>
+  {% endif %}
+</div>
+{% endblock %}

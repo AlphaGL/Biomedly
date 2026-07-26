@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Log in — Biomedly{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Welcome back</h1>
+  <p>Log in to your team's workbench.</p>
+</section>
+
+<div class="auth-card panel">
+  {% if form.errors %}
+    <div class="status error">Incorrect username or password.</div>
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <label class="field">
+      <span>Username</span>
+      <input type="text" name="username" required autofocus>
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input type="password" name="password" required>
+    </label>
+    <button type="submit" class="btn-primary">Log in</button>
+  </form>
+  <p class="muted">No account yet? <a href="{% url 'accounts:signup' %}">Sign up</a></p>
+</div>
+{% endblock %}

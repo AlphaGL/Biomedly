@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#12313d">
+  <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+  <title>{% block title %}Biomedly — Medical Equipment Assistant{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  {% include "_icons.html" %}
+
+  <header class="topbar">
+    <a class="brand" href="{% url 'equipment:home' %}">
+      <svg class="icon brand-mark"><use href="#icon-cross"></use></svg>
+      <span>Biomedly</span>
+    </a>
+    <nav>
+      <a href="{% url 'equipment:home' %}" title="Workbench"><svg class="icon"><use href="#icon-chat"></use></svg><span class="nav-label">Workbench</span></a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'assets:list' %}" title="Assets"><svg class="icon"><use href="#icon-box"></use></svg><span class="nav-label">Assets</span></a>
+        <a href="{% url 'assets:parts' %}" title="Parts"><svg class="icon"><use href="#icon-wrench"></use></svg><span class="nav-label">Parts</span></a>
+        <a href="{% url 'equipment:history' %}" title="Team History"><svg class="icon"><use href="#icon-book"></use></svg><span class="nav-label">Team History</span></a>
+        <a href="{% url 'accounts:organization' %}" title="Team"><svg class="icon"><use href="#icon-users"></use></svg><span class="nav-label">Team</span></a>
+        <form method="post" action="{% url 'accounts:logout' %}" class="nav-logout-form">
+          {% csrf_token %}
+          <button type="submit" title="Log out"><svg class="icon"><use href="#icon-log-out"></use></svg><span class="nav-label">{{ user.username }}</span></button>
+        </form>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" title="Log in"><svg class="icon"><use href="#icon-user"></use></svg><span class="nav-label">Log in</span></a>
+        <a href="{% url 'accounts:signup' %}" title="Sign up"><svg class="icon"><use href="#icon-users"></use></svg><span class="nav-label">Sign up</span></a>
+      {% endif %}
+      <a href="https://www.ifixit.com/biomed" target="_blank" rel="noopener" title="iFixit Biomed"><span class="nav-label">iFixit Biomed</span><svg class="icon icon-sm"><use href="#icon-external-link"></use></svg></a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    Data sources: <a href="https://www.ifixit.com/biomed" target="_blank" rel="noopener">iFixit Medical Library</a> ·
+    <a href="https://open.fda.gov/apis/device/" target="_blank" rel="noopener">openFDA Device APIs</a> ·
+    <a href="https://accessgudid.nlm.nih.gov/" target="_blank" rel="noopener">NIH AccessGUDID</a> ·
+    AI analysis by Google Gemini. Always follow manufacturer service manuals and hospital safety policy.
+    <br>
+    Built by <a href="https://ibeawuchicn.vercel.app/classic/" target="_blank" rel="noopener">Ibeawuchi CN</a>
+  </footer>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("{% static 'js/sw.js' %}").catch(() => {});
+      });
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

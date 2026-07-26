@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ wo.title }} — Work Order{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h2>WO-{{ wo.pk }}: {{ wo.title }}</h2>
+    <a href="{% url 'assets:workorder_pdf' wo.pk %}" class="btn-ghost"><svg class="icon"><use href="#icon-document"></use></svg> Export PDF</a>
+  </div>
+
+  {% if messages %}{% for m in messages %}<div class="status {{ m.tags }}">{{ m }}</div>{% endfor %}{% endif %}
+
+  <p>
+    <span class="badge">{{ wo.get_status_display }}</span>
+    <span class="badge">Asset: <a href="{% url 'assets:detail' wo.asset.pk %}">{{ wo.asset.name }}</a></span>
+    <span class="badge">By {{ wo.technician.username|default:"—" }}</span>
+    <span class="badge">{{ wo.created_at|date:"M j, Y H:i" }}</span>
+  </p>
+
+  {% if wo.photo %}<img src="{{ wo.photo.url }}" alt="" style="max-width:320px;border-radius:8px;margin:0.6rem 0;">{% endif %}
+
+  <h4>Problem</h4>
+  <p>{{ wo.problem_description|linebreaksbr|default:"—" }}</p>
+
+  {% if wo.linked_analysis %}
+    <h4>Linked Assistant conversation</h4>
+    <div class="answer md-source">{{ wo.linked_analysis.response_md }}</div>
+  {% endif %}
+
+  {% if wo.status == "resolved" %}
+    <h4>Resolution</h4>
+    <p>{{ wo.resolution_notes|linebreaksbr }}</p>
+    <p class="muted">Resolved {{ wo.resolved_at|date:"M j, Y H:i" }}</p>
+  {% else %}
+    <h4>Mark resolved</h4>
+    <form method="post" action="{% url 'assets:workorder_resolve' wo.pk %}">
+      {% csrf_token %}
+      <label class="field"><span>Resolution notes</span>
+        <textarea name="resolution_notes" rows="4" required></textarea></label>
+      <button type="submit" class="btn-primary"><svg class="icon"><use href="#icon-check-circle"></use></svg> Mark resolved</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/app.js' %}"></script>
+<script>
+  document.querySelectorAll(".md-source").forEach(el => { el.innerHTML = renderMarkdown(el.textContent); });
+</script>
+{% endblock %}

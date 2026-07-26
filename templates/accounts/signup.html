@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Sign up — Biomedly{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Create your account</h1>
+  <p>Use Biomedly solo, start a team, or join one with an invite code from your department lead.</p>
+</section>
+
+<div class="auth-card panel">
+  {% if messages %}
+    {% for m in messages %}<div class="status {{ m.tags }}">{{ m }}</div>{% endfor %}
+  {% endif %}
+
+  <div class="mode-row three-way">
+    <a class="chip {% if action == 'individual' %}active-chip{% endif %}" href="?action=individual">
+      <svg class="icon"><use href="#icon-user"></use></svg> Individual</a>
+    <a class="chip {% if action == 'create' %}active-chip{% endif %}" href="?action=create">
+      <svg class="icon"><use href="#icon-users"></use></svg> Create a team</a>
+    <a class="chip {% if action == 'join' %}active-chip{% endif %}" href="?action=join">
+      <svg class="icon"><use href="#icon-shield"></use></svg> Join a team</a>
+  </div>
+  <p class="muted" style="font-size:0.85rem;">
+    {% if action == "individual" %}Your own private workspace — you can invite teammates later and it becomes a team.
+    {% elif action == "create" %}You'll be the team admin, with an invite code to share.
+    {% else %}You'll join as a technician on your team's existing workspace.{% endif %}
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="{{ action }}">
+
+    {% if action == "join" %}
+      <label class="field">
+        <span>Invite code</span>
+        <input type="text" name="invite_code" placeholder="e.g. A1B2C3D4" required autocapitalize="characters">
+      </label>
+    {% elif action == "create" %}
+      <label class="field">
+        <span>Team / department name</span>
+        <input type="text" name="org_name" placeholder="e.g. Riverside General — Biomed Dept" required>
+      </label>
+    {% endif %}
+
+    <label class="field">
+      <span>Username</span>
+      <input type="text" name="username" required>
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input type="password" name="password1" required>
+    </label>
+    <label class="field">
+      <span>Confirm password</span>
+      <input type="password" name="password2" required>
+    </label>
+
+    {% if form.errors %}
+      <div class="status error">
+        {% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}
+      </div>
+    {% endif %}
+
+    <button type="submit" class="btn-primary">Create account</button>
+  </form>
+  <p class="muted">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+  <p class="muted">Just here for the AI assistant? <a href="{% url 'equipment:home' %}">Use it without an account →</a></p>
+</div>
+{% endblock %}

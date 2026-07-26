@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="hero">
+  <h1>Know the machine. Fix the machine.</h1>
+  <p>Snap photos or a short video of any medical equipment, ask anything, and keep the
+     conversation going — identity, components, boards, working principle, troubleshooting.</p>
+</section>
+
+{% if not user.is_authenticated %}
+<div class="upsell-banner">
+  <svg class="icon icon-lg"><use href="#icon-activity"></use></svg>
+  <div>
+    <strong>Free to use — no account needed</strong> for the AI assistant and equipment research below.
+    <a href="{% url 'accounts:signup' %}">Create a free account</a> to also unlock: an
+    asset register with QR codes, work-order logging with PDF export, a parts cross-reference,
+    and a searchable team knowledge base.
+  </div>
+</div>
+{% endif %}
+
+<nav class="view-tabs" id="view-tabs">
+  <button type="button" class="view-tab active" data-tab="ask-panel">
+    <svg class="icon"><use href="#icon-chat"></use></svg> Assistant</button>
+  <button type="button" class="view-tab" data-tab="search-panel">
+    <svg class="icon"><use href="#icon-search"></use></svg> Research equipment</button>
+</nav>
+
+<div class="workbench">
+  <!-- ===== Assistant (chat) panel ===== -->
+  <section class="panel chat-panel" id="ask-panel">
+    <div class="panel-head">
+      <h2><svg class="icon"><use href="#icon-chat"></use></svg> Assistant</h2>
+      <button type="button" id="new-session" class="btn-ghost" hidden>
+        <svg class="icon"><use href="#icon-refresh"></use></svg> New conversation</button>
+    </div>
+
+    <div id="thread" class="chat-thread">
+      <div class="bubble assistant welcome">
+        I'm your biomed mentor. Attach photos of a machine, its nameplate, a circuit
+        board — or a short video of the fault — and ask me anything. Pick your level
+        below and I'll adapt: teach you (student), guide you (technician), or get
+        straight to test points (senior).
+      </div>
+    </div>
+
+    <div id="analyze-status" class="status" hidden></div>
+
+    <form id="analyze-form" class="composer">
+      {% csrf_token %}
+
+      <div class="composer-settings">
+        <input type="text" name="equipment_name" id="equipment-name"
+               placeholder="Equipment name / model (boosts accuracy)">
+        <select name="mode" id="mode" title="What kind of answer">
+          <option value="identify">Identify</option>
+          <option value="components">Components</option>
+          <option value="board">Board / PCB</option>
+          <option value="function">How it works</option>
+          <option value="troubleshoot" selected>Troubleshoot</option>
+        </select>
+        <select name="level" id="level" title="Answer depth">
+          <option value="student">Student</option>
+          <option value="technician" selected>Technician</option>
+          <option value="senior">Senior engineer</option>
+        </select>
+      </div>
+
+      <div id="dz-thumbs" class="thumbs"></div>
+
+      <div class="composer-row" id="dropzone">
+        <input type="file" id="media-input"
+               accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime"
+               multiple hidden>
+        <button type="button" id="attach-btn" class="attach-btn" title="Attach photos or a video">
+          <svg class="icon"><use href="#icon-paperclip"></use></svg></button>
+        <textarea name="question" id="question" rows="2"
+                  placeholder="Ask anything… e.g. It powers on but the cuff never inflates. What should I check?"></textarea>
+        <button type="submit" class="send-btn" id="analyze-btn" title="Send">
+          <svg class="icon"><use href="#icon-send"></use></svg></button>
+      </div>
+      <p class="composer-hint">Up to 4 photos + 1 short video (&lt;18 MB, ~30–60 s). Media is analyzed
+         in memory and never stored. Shoot boards straight-on, close enough to read chip markings.</p>
+    </form>
+  </section>
+
+  <!-- ===== Research panel ===== -->
+  <section class="panel hidden" id="search-panel">
+    <h2><svg class="icon"><use href="#icon-search"></use></svg> Research equipment</h2>
+
+    <form id="search-form" class="inline-form">
+      <input type="text" id="search-input" placeholder="Search: infusion pump, ventilator, centrifuge…">
+      <button type="submit" class="btn-secondary">Search</button>
+    </form>
+
+    <form id="udi-form" class="inline-form">
+      <input type="text" id="udi-input" placeholder="Or paste the UDI barcode number from the device label">
+      <button type="submit" class="btn-secondary">Look up UDI</button>
+    </form>
+
+    <div id="search-status" class="status" hidden></div>
+    <div id="search-results"></div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock %}

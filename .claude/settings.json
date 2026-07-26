@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python --version)",
+      "PowerShell(pip --version)",
+      "WebSearch",
+      "PowerShell(pip install django requests python-dotenv anthropic pillow --quiet)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "PowerShell(python manage.py makemigrations equipment)",
+      "PowerShell(python manage.py migrate)",
+      "PowerShell(pip install -U attrs trio --quiet)",
+      "PowerShell(python -c \"import anthropic; print\\('anthropic OK', anthropic.__version__\\)\")",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/\" -UseBasicParsing; \"home: $\\($r.StatusCode\\)\"; $r2 = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/history/\" -UseBasicParsing; \"history: $\\($r2.StatusCode\\)\")",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/api/search/?q=defibrillator\" -UseBasicParsing -TimeoutSec 60; $j = $r.Content | ConvertFrom-Json; \"guides: $\\($j.guides.Count\\)  devices: $\\($j.devices.Count\\)  classification: $\\($j.classification.Count\\)  recalls: $\\($j.recalls.Count\\)\"; if \\($j.guides.Count -gt 0\\) { $j.guides[0].title }; if \\($j.classification.Count -gt 0\\) { $j.classification[0].device_name + \" \\(Class \" + $j.classification[0].device_class + \"\\)\" })",
+      "PowerShell($r = Invoke-WebRequest -Uri \"https://www.ifixit.com/api/2.0/search/defibrillator?filter=guide&limit=5\" -UseBasicParsing -TimeoutSec 30; $j = $r.Content | ConvertFrom-Json; \"totalResults: $\\($j.totalResults\\)\"; if \\($j.results.Count -gt 0\\) { $j.results[0] | ConvertTo-Json -Depth 3 })",
+      "PowerShell($r = Invoke-WebRequest -Uri \"https://www.ifixit.com/api/2.0/search/infusion%20pump?filter=guide&limit=3\" -UseBasicParsing -TimeoutSec 30; $j = $r.Content | ConvertFrom-Json; \"totalResults: $\\($j.totalResults\\)\"; $j.results | ForEach-Object { $_.title })",
+      "PowerShell($r = Invoke-WebRequest -Uri \"https://www.ifixit.com/api/2.0/search/infusion%20pump?limit=10\" -UseBasicParsing -TimeoutSec 30; $j = $r.Content | ConvertFrom-Json; \"total: $\\($j.totalResults\\)\"; $j.results | ForEach-Object { \"$\\($_.dataType\\) :: $\\($_.title\\)\" } | Select-Object -First 10)",
+      "PowerShell($r = Invoke-WebRequest -Uri \"https://www.ifixit.com/api/2.0/search/iphone%20battery?filter=guide&limit=3\" -UseBasicParsing -TimeoutSec 30; $j = $r.Content | ConvertFrom-Json; \"guide filter total: $\\($j.totalResults\\)\"; $r2 = Invoke-WebRequest -Uri \"https://www.ifixit.com/api/2.0/wikis/CATEGORY/Baxter%20Infusion%20Pump\" -UseBasicParsing -TimeoutSec 30; $j2 = $r2.Content | ConvertFrom-Json; \"category guides: $\\($j2.guides.Count\\)\")",
+      "PowerShell(Copy-Item .env.example .env; \"copied\"; try { $r = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/api/analyze/\" -Method POST -Body @{question=\"test\"; mode=\"identify\"} -UseBasicParsing -TimeoutSec 60 } catch { $resp = $_.Exception.Response; $sr = New-Object IO.StreamReader\\($resp.GetResponseStream\\(\\)\\); \"status: $\\([int]$resp.StatusCode\\) body: $\\($sr.ReadToEnd\\(\\)\\)\" })",
+      "PowerShell($c = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/\" -UseBasicParsing -SessionVariable sess; $token = \\($sess.Cookies.GetCookies\\(\"http://127.0.0.1:8000/\"\\) | Where-Object Name -eq \"csrftoken\"\\).Value; try { $r = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/api/analyze/\" -Method POST -WebSession $sess -Headers @{\"X-CSRFToken\"=$token} -Body @{question=\"test\"; mode=\"identify\"} -UseBasicParsing -TimeoutSec 90; $r.Content } catch { $resp = $_.Exception.Response; $sr = New-Object IO.StreamReader\\($resp.GetResponseStream\\(\\)\\); \"status: $\\([int]$resp.StatusCode\\) body: $\\($sr.ReadToEnd\\(\\)\\)\" })",
+      "PowerShell(\"---\")",
+      "PowerShell(python manage.py runserver 127.0.0.1:8000 --noreload)",
+      "PowerShell(Start-Sleep -Seconds 4; $c = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/\" -UseBasicParsing -SessionVariable sess; $token = \\($sess.Cookies.GetCookies\\(\"http://127.0.0.1:8000/\"\\) | Where-Object Name -eq \"csrftoken\"\\).Value; try { $r = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/api/analyze/\" -Method POST -WebSession $sess -Headers @{\"X-CSRFToken\"=$token} -Body @{question=\"quick ping\"; mode=\"identify\"} -UseBasicParsing -TimeoutSec 120; \"status 200: $\\($r.Content.Substring\\(0, [Math]::Min\\(200, $r.Content.Length\\)\\)\\)\" } catch { $resp = $_.Exception.Response; $sr = New-Object IO.StreamReader\\($resp.GetResponseStream\\(\\)\\); \"status: $\\([int]$resp.StatusCode\\) body: $\\($sr.ReadToEnd\\(\\)\\)\" })",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/\" -UseBasicParsing -TimeoutSec 15; \"home: $\\($r.StatusCode\\)\")",
+      "PowerShell($c = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/\" -UseBasicParsing -SessionVariable sess -TimeoutSec 15; $token = \\($sess.Cookies.GetCookies\\(\"http://127.0.0.1:8000/\"\\) | Where-Object Name -eq \"csrftoken\"\\).Value; \"token: $\\($token.Substring\\(0,8\\)\\)...\"; try { $r = Invoke-WebRequest -Uri \"http://127.0.0.1:8000/api/analyze/\" -Method POST -WebSession $sess -Headers @{\"X-CSRFToken\"=$token} -Body @{question=\"quick ping\"; mode=\"identify\"} -UseBasicParsing -TimeoutSec 90; \"status 200\" } catch { $resp = $_.Exception.Response; if \\($resp\\) { $sr = New-Object IO.StreamReader\\($resp.GetResponseStream\\(\\)\\); \"status: $\\([int]$resp.StatusCode\\) body: $\\($sr.ReadToEnd\\(\\)\\)\" } else { \"no response: $\\($_.Exception.Message\\)\" } })",
+      "Read(//c/Users/IBEAWU~1/AppData/Local/Temp/claude/c--Users-Ibeawuchi-Desktop-biomedtool/8f076872-e62f-47ee-89a9-00644a423761/tasks/**)",
+      "PowerShell(pip install google-genai --quiet)",
+      "PowerShell(python -c \"from google import genai; print\\('google-genai OK'\\)\")",
+      "PowerShell(python -u \"C:\\\\Users\\\\IBEAWU~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Ibeawuchi-Desktop-biomedtool\\\\8f076872-e62f-47ee-89a9-00644a423761\\\\scratchpad\\\\gemini_probe.py\")",
+      "PowerShell(python -u \"C:\\\\Users\\\\IBEAWU~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Ibeawuchi-Desktop-biomedtool\\\\8f076872-e62f-47ee-89a9-00644a423761\\\\scratchpad\\\\illustrate_probe.py\")",
+      "PowerShell(python -u \"C:\\\\Users\\\\IBEAWU~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Ibeawuchi-Desktop-biomedtool\\\\8f076872-e62f-47ee-89a9-00644a423761\\\\scratchpad\\\\board_e2e.py\")",
+      "PowerShell(pip install \"psycopg[binary]\" dj-database-url --quiet)",
+      "PowerShell(python -u \"C:\\\\Users\\\\IBEAWU~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Ibeawuchi-Desktop-biomedtool\\\\8f076872-e62f-47ee-89a9-00644a423761\\\\scratchpad\\\\pg_e2e.py\")",
+      "PowerShell(python -u \"C:\\\\Users\\\\IBEAWU~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Ibeawuchi-Desktop-biomedtool\\\\8f076872-e62f-47ee-89a9-00644a423761\\\\scratchpad\\\\research_e2e.py\")",
+      "PowerShell(python -u \"C:\\\\Users\\\\IBEAWU~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Ibeawuchi-Desktop-biomedtool\\\\8f076872-e62f-47ee-89a9-00644a423761\\\\scratchpad\\\\research_e2e2.py\")",
+      "PowerShell(python -u \"C:\\\\Users\\\\IBEAWU~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Ibeawuchi-Desktop-biomedtool\\\\8f076872-e62f-47ee-89a9-00644a423761\\\\scratchpad\\\\tab_check.py\")"
+    ]
+  }
+}

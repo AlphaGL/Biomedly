@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ asset.name }} — Biomedly{% endblock %}
+{% block content %}
+<div class="panel device-detail">
+  <div class="device-head">
+    {% if asset.photo %}<img src="{{ asset.photo.url }}" alt="">{% endif %}
+    <div>
+      <h3>{{ asset.name }}</h3>
+      <p class="muted">{{ asset.full_name }}{% if asset.location %} · <svg class="icon icon-sm"><use href="#icon-map-pin"></use></svg> {{ asset.location }}{% endif %}</p>
+      {% if asset.serial_number %}<p class="muted">Serial: <span class="mono">{{ asset.serial_number }}</span></p>{% endif %}
+      {% if asset.next_pm_date %}<span class="badge">PM due {{ asset.next_pm_date }}</span>{% endif %}
+      <div style="margin-top:0.6rem;">
+        <a class="chip followup" href="{% url 'equipment:home' %}?equipment_name={{ asset.full_name|urlencode }}">
+          <svg class="icon"><use href="#icon-chat"></use></svg> Ask the Assistant about this</a>
+        <a class="chip" href="{% url 'assets:edit' asset.pk %}"><svg class="icon"><use href="#icon-edit"></use></svg> Edit</a>
+        <a class="chip" href="{% url 'assets:workorder_create' asset.pk %}"><svg class="icon"><use href="#icon-wrench"></use></svg> Log work order</a>
+      </div>
+    </div>
+  </div>
+
+  {% if asset.notes %}<p>{{ asset.notes }}</p>{% endif %}
+
+  <h4><svg class="icon"><use href="#icon-qrcode"></use></svg> QR code</h4>
+  <p class="muted">Print and stick this on the machine — scanning it opens this exact page.</p>
+  <img src="{% url 'assets:qr' asset.pk %}" alt="QR code" style="width:160px;height:160px;border:1px solid var(--border);border-radius:var(--radius);">
+
+  <h4><svg class="icon"><use href="#icon-wrench"></use></svg> Work order history ({{ work_orders|length }})</h4>
+  {% if work_orders %}
+    <div class="doc-list">
+      {% for wo in work_orders %}
+        <a class="doc-row" href="{% url 'assets:workorder_detail' wo.pk %}">
+          <span class="doc-icon">
+            {% if wo.status == "resolved" %}<svg class="icon"><use href="#icon-check-circle"></use></svg>
+            {% elif wo.status == "in_progress" %}<svg class="icon"><use href="#icon-wrench"></use></svg>
+            {% else %}<svg class="icon"><use href="#icon-clock"></use></svg>{% endif %}
+          </span>
+          <span class="doc-title">{{ wo.title }}</span>
+          <span class="badge">{{ wo.get_status_display }}</span>
+          <span class="badge">{{ wo.created_at|date:"M j, Y" }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No work orders yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
