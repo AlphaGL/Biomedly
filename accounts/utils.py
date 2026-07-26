@@ -4,6 +4,8 @@ The data model (Membership) supports a user belonging to multiple orgs, but
 the UI only ever surfaces the first one — simplest thing that works for a
 small department, without blocking future multi-org support.
 """
+from __future__ import annotations
+
 from .models import Membership
 
 

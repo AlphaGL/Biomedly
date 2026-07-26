@@ -9,6 +9,8 @@ Provider selection:
   rotated automatically when one hits its free-tier quota.
 - Otherwise, if ANTHROPIC_API_KEY is set, Claude is used.
 """
+from __future__ import annotations
+
 import os
 
 # Accuracy first: try the strongest model, fall back when quota runs out.

@@ -5,6 +5,8 @@ iFixit hosts the world's largest open medical-equipment repair library
 No API key is required for read-only access. Content is CC BY-NC-SA —
 always shown with attribution and a link back.
 """
+from __future__ import annotations
+
 import re
 
 import requests

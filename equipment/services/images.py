@@ -11,6 +11,8 @@ The AI inserts markers like ``[IMAGE: infusion pump peristaltic mechanism]``
 in its answer; ``illustrate()`` replaces each marker with a markdown image
 plus a source link, or removes the marker when nothing suitable is found.
 """
+from __future__ import annotations
+
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor

@@ -7,6 +7,8 @@
   https://accessgudid.nlm.nih.gov/resources/developers/device_lookup_api
 All free; openFDA key is optional (higher rate limits).
 """
+from __future__ import annotations
+
 import os
 
 import requests

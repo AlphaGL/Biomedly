@@ -5,6 +5,8 @@ as the manual finder — this builds direct search-by-part-number URLs to the
 major electronics distributors. Zero cost, zero keys, always works; it just
 doesn't confirm the part is actually in stock before you click through.
 """
+from __future__ import annotations
+
 import requests
 
 SUPPLIERS = [

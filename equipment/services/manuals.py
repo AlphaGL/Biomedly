@@ -11,6 +11,8 @@ Order:
    and no quota — so the feature never dead-ends even before those keys
    are configured.
 """
+from __future__ import annotations
+
 import os
 
 import requests
